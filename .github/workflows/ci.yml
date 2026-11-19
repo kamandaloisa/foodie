@@ -1,0 +1,34 @@
+
+name: Foodie CI Pipeline
+
+on:
+  push:
+    branches: [main]
+
+  pull_request:
+    branches: [main]
+
+jobs:
+  laravel-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: mbstring, bcmath, pdo_sqlite, sqlite3
+
+      - name: Install Dependencies
+        run: composer install --no-interaction --prefer-dist
+
+      - name: Setup Environment
+        run: |
+          cp .env.example .env
+          php artisan key:generate
+
+      - name: Run Tests
+        run: php artisan test
